@@ -1,0 +1,5 @@
+groups:
+  - name: email_router
+    rules:
+    - alert: SSL_expiry_90days
+      expr: probe_ssl_earliest_cert_expiry{job="blackbox_critical_ssl"} < 7779661

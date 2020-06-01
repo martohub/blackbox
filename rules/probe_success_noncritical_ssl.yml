@@ -1,0 +1,10 @@
+groups:
+  - name: email_router
+    rules:
+    - alert: Endpoint_Down
+      expr: probe_success{job="blackbox_noncritical_ssl"} == 0
+      for: 5m
+      labels:
+        severity: CRITICAL
+      annotations:
+        summary: "Endpoint {{ $labels.instance }} down"
