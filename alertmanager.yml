@@ -1,0 +1,25 @@
+route:
+  group_by: ['email_to']
+  receiver: email_router
+
+receivers:
+- name: email_router
+  email_configs:
+  - to: "{{ .GroupLabels.email_to }}"
+    from: "ENTER_EMAIL@gmail.com"
+    headers:
+      subject: "You have {{ .Alerts.Firing | len }} firing alerts"
+    html: |
+      Hi {{ .GroupLabels.email_to }},
+
+      <p>
+      You have the following firing alerts:
+      <ul>
+      {{ range .Alerts }}
+      <li>{{.Labels.alertname}} on {{ .Labels.instance }}</li>
+      {{ end }}
+      </ul>
+      </p>
+    smarthost: smtp.gmail.com:587
+    auth_username: "ENTER_USER@gmail.com"
+    auth_password: "ENTER_PASSWORD"
