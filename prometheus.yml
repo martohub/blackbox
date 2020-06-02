@@ -1,0 +1,163 @@
+# Sample config for Prometheus.
+
+global:
+  scrape_interval:     1m 
+  evaluation_interval: 1m
+
+alerting:
+  alertmanagers:
+  - static_configs:
+    - targets: ['localhost:9093']
+
+rule_files:
+  - "/etc/prometheus/rules/probe_success_critical_ssl.yml"
+  - "/etc/prometheus/rules/probe_success_critical_nossl.yml"
+  - "/etc/prometheus/rules/probe_success_noncritical_ssl.yml"
+  - "/etc/prometheus/rules/probe_success_noncritical_nossl.yml"
+  - "/etc/prometheus/rules/critical_ssl_30days.yml"
+  - "/etc/prometheus/rules/critical_ssl_50days.yml"
+  - "/etc/prometheus/rules/critical_ssl_60days.yml"
+  - "/etc/prometheus/rules/critical_ssl_7days.yml"
+  - "/etc/prometheus/rules/critical_ssl_90days.yml"
+  - "/etc/prometheus/rules/noncritical_ssl_30days.yml"
+  - "/etc/prometheus/rules/noncritical_ssl_60days.yml"
+  - "/etc/prometheus/rules/noncritical_ssl_7days.yml"
+
+scrape_configs:
+#######BLACKBOX CRITICAL FILESD#######
+#######SSL TARGETS#######
+  - job_name: 'blackbox_critical_ssl'
+    scrape_interval: 15s
+    scrape_timeout: 10s
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    file_sd_configs:
+    - files: ['/etc/prometheus/targets/critical/blackbox_ssl.yml']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: localhost:9115
+#######NO_SSL TARGETS#######
+  - job_name: 'blackbox_critical_no_ssl'
+    scrape_interval: 30s
+    scrape_timeout: 10s
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    file_sd_configs:
+    - files: ['/etc/prometheus/targets/critical/blackbox_no_ssl.yml']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: localhost:9115
+#######BLACKBOX NONCRITICAL FILESD#######
+#######SSL TARGETS#######
+  - job_name: 'blackbox_noncritical_ssl'
+    scrape_interval: 1m
+    scrape_timeout: 10s
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    file_sd_configs:
+    - files: ['/etc/prometheus/targets/noncritical/blackbox_ssl.yml']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: localhost:9115
+#######NO_SSL TARGETS#######
+  - job_name: 'blackbox_noncritical_no_ssl'
+    scrape_interval: 1m
+    scrape_timeout: 10s
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    file_sd_configs:
+    - files: ['/etc/prometheus/targets/noncritical/blackbox_no_ssl.yml']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: localhost:9115
+
+
+
+
+
+  - job_name: 'prometheus'
+    scrape_interval: 5s
+    scrape_timeout: 5s
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'pushgateway'
+    honor_labels: true
+    static_configs:
+      - targets: ['localhost:9091']
+
+  - job_name: 'node exporter'
+    honor_labels: true
+    static_configs:
+      - targets: ['localhost:9100']
+
+######################
+#  - job_name: 'blackbox'
+#    scrape_interval: 5s
+#    metrics_path: /probe
+#    params:
+#      module: [http_2xx]
+#    static_configs:
+#      - targets:
+#        - https://google.com
+#        - https://postman-echo.com/oauth1
+#        - https://postman-echo.com/time/leap?timestamp=2016-10-10
+#        - https://postman-echo.com/cookies
+#        - https://postman-echo.com/ip
+#        - https://postman-echo.com/stream/5
+#        - https://postman-echo.com/encoding/utf8
+#        labels:
+#          environment: 'test'
+#    relabel_configs:
+#      - source_labels: [__address__]
+#        target_label: __param_target
+#      - source_labels: [__param_target]
+#        target_label: instance
+#      - target_label: __address__
+#        replacement: localhost:9115  # The blackbox exporter's real hostname:port.
+
+
+######################
+#  - job_name: 'blackbox'
+#    scrape_interval: 5s
+#    metrics_path: /probe
+#    params:
+#      module: [http_2xx]
+#    static_configs:
+#      - targets:
+#        - https://google.com
+#        - https://postman-echo.com/oauth1
+#        - https://postman-echo.com/time/leap?timestamp=2016-10-10
+#        - https://postman-echo.com/cookies
+#        - https://postman-echo.com/ip
+#        - https://postman-echo.com/stream/5
+#        - https://postman-echo.com/encoding/utf8
+#        labels:
+#          environment: 'test'
+#    relabel_configs:
+#      - source_labels: [__address__]
+#        target_label: __param_target
+#      - source_labels: [__param_target]
+#        target_label: instance
+#      - target_label: __address__
+#        replacement: localhost:9115  # The blackbox exporter's real hostname:port.
